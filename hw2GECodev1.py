@@ -77,35 +77,58 @@ def inconsistentSystem(A):
     B is assumed to be in echelon form; return True if it represents
     an inconsistent system, and False otherwise
     """
+    #m and n will be the dimensions of A.
     m, n = np.shape(A)
     for i in range(m):
         for j in range(n):
+
+            #For each number in the matrix, if it's not 0 and not the last number in its row, break.
+            #If it is 0 and not the last number in its row, continue.
+            #If it is the last number in its row and it's not 0, return True.
             if (A[i][j] != 0.0) and (j != n - 1):
                 break
             elif (A[i][j] == 0.0) and (j != n - 1):
                 continue
             elif (j == n - 1) and (A[i][j] != 0.0) :
                 return True
+    
+    #Else, return false.
     return False
 
 def backsubstitution(B):
+
+    #Copy matrix B onto matrix A.
     A = B.copy().astype(float)
+
+    #m and n will be the dimensions of A.
     m, n = np.shape(A)
+
+    #For each row starting from the last and working up,
     for i in range(m - 1, -1 , -1):
         pivotCol = n
+
+        #search for the pivot position.
         for j in range(n):
             if (A[i][j] != 0.0):
                 pivotCol = j
                 break
 
+        #If no such position exists, move onto the next row.
         if pivotCol == n:
             continue
 
+        #If a position position exists, use row reduction operations to create 0s in all 
+        #positions above the pivot.
         for h in range(i - 1, -1 , -1):
             rowReduce(A, i, h, pivotCol)
 
-    print(A)
-
+    #For each row, this nested for loop will search each number until it has 
+    #found the first non-zero number. Up until that point, it will divide each 
+    #number it comes across by 1. When it has found the first non-zero number, 
+    #it will set divideNum to it and foundNum to True so that it can 
+    #go on dividing by that number instead of 1. The variables divideNum and 
+    #foundNum will reset to 1 and False respectively upon the completion of a 
+    #row.
     for i in range(m):
         divideNum = 1.0
         foundNum = False
@@ -114,14 +137,10 @@ def backsubstitution(B):
                 foundNum = True
                 divideNum = A[i][j]
                 A[i][j] /= divideNum
-                print(divideNum)
             else:
                 A[i][j] /= divideNum
                 
-
     return A
-
-
 
 
 #####################
@@ -129,9 +148,9 @@ def backsubstitution(B):
 if __name__ == '__main__':
 
 
-    A = np.loadtxt('h2m1.txt')
-    A = forwardElimination(A)
-    print(A)
+    A = np.loadtxt('h2m6.txt')
     print(inconsistentSystem(A))
-
+    A = forwardElimination(A)
+    A = backsubstitution(A)
+    print(A)
 
