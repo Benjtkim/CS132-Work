@@ -78,39 +78,61 @@ def inconsistentSystem(A):
     an inconsistent system, and False otherwise
     """
     nonZeroes = np.nonzero(A)
-    
+
+    #Iterate through the array that has all the column indicies of the non-zeroes
+    #in A.
     for i in range(len(nonZeroes[1])):
-        if (i == 0) and (nonZeroes[1][i] == 6):
+
+        #If i is 0 and the first element in the aforementioned array refers to the 
+        #last column in the matrix, A is inconsistent.
+        if (i == 0) and (nonZeroes[1][i] == len(A[0]) - 1):
             return True
-        elif (nonZeroes[1][i] == 6) and (nonZeroes[1][i - 1] == 6):
+        
+        #On the other hand, if the column the current element in the array refers to is the last 
+        #column and the element right before also refers to the last column, A is inconsistent.
+        elif (nonZeroes[1][i] == len(A[0]) - 1) and (nonZeroes[1][i - 1] == len(A[0]) - 1):
             return True
     
     return False
 
 def backsubstitution(B):
-    """
-    return the reduced row echelon form matrix of B
-    """
+
+    #Copy matrix B onto matrix A.
     A = B.copy().astype(float)
-    nonZeroes = np.nonzero(A)
-    i = len(nonZeroes[0]) - 1
-    j = len(nonZeroes[1]) - 1
-    finishedCurrRow = False
-    currNum = max(nonZeroes[0])
-    while currNum > -1:
-        if nonZeroes[1][j] == 6:
-            j -= 1
-        elif finishedCurrRow == False:
-            for h in range(currNum - 1, -1, -1):
-                rowReduce(A, currNum, h, nonZeroes[1][j])
-            finishedCurrRow = True
-            currNum -= 1
-        elif finishedCurrRow == True:
-            while nonZeroes[0][i] != currNum:
-                i -= 1
-            j = i
-            finishedCurrRow = False
+
+    #m and n will be the dimensions of A.
+    m, n = np.shape(A)
+
+    #For each row starting from the last and working up,
+    for i in range(m - 1, -1 , -1):
+
+        #Find the pivot column using np.nonzero.
+        pivotCol = np.nonzero(A[i])[0][0]
+
+        #Use row reduction operations to create 0s in all the positions above the pivot.
+        for h in range(i - 1, -1 , -1):
+            rowReduce(A, i, h, pivotCol)
+
+    #For each row, this nested for loop will search each number until it has 
+    #found the first non-zero number. Up until that point, it will divide each 
+    #number it comes across by 1. When it has found the first non-zero number, 
+    #it will set divideNum to it and foundNum to True so that it can 
+    #go on dividing by that number instead of 1. The variables divideNum and 
+    #foundNum will reset to 1 and False respectively upon the completion of a 
+    #row.
+    for i in range(m):
+        divideNum = 1.0
+        foundNum = False
+        for j in range(n):
+            if (A[i][j] != 0.0) and (j != n - 1) and (foundNum == False):
+                foundNum = True
+                divideNum = A[i][j]
+                A[i][j] /= divideNum
+            else:
+                A[i][j] /= divideNum
+                
     return A
+
             
 
 
@@ -128,5 +150,6 @@ if __name__ == '__main__':
     print(np.nonzero(A)[0])
     print(np.nonzero(A)[1])
     print(inconsistentSystem(A))
-    backsubstitution(A)
+    A = backsubstitution(A)
+    print(A)
 
