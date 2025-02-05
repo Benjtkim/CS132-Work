@@ -91,6 +91,28 @@ def backsubstitution(B):
     """
     return the reduced row echelon form matrix of B
     """
+    A = B.copy().astype(float)
+    nonZeroes = np.nonzero(A)
+    i = len(nonZeroes[0]) - 1
+    j = len(nonZeroes[1]) - 1
+    finishedCurrRow = False
+    currNum = max(nonZeroes[0])
+    while currNum > -1:
+        if nonZeroes[1][j] == 6:
+            j -= 1
+        elif finishedCurrRow == False:
+            for h in range(currNum - 1, -1, -1):
+                rowReduce(A, currNum, h, nonZeroes[1][j])
+            finishedCurrRow = True
+            currNum -= 1
+        elif finishedCurrRow == True:
+            while nonZeroes[0][i] != currNum:
+                i -= 1
+            j = i
+            finishedCurrRow = False
+    return A
+            
+
 
 
 
