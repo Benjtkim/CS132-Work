@@ -106,8 +106,12 @@ def backsubstitution(B):
     #For each row starting from the last and working up,
     for i in range(m - 1, -1 , -1):
 
-        #Find the pivot column using np.nonzero.
-        pivotCol = np.nonzero(A[i])[0][0]
+        #Find the pivot column using np.nonzero. Use try/except because if there's an error, that means 
+        # there's no non-zero element in that row.
+        try:
+            pivotCol = np.nonzero(A[i])[0][0]
+        except:
+            continue
 
         #Use row reduction operations to create 0s in all the positions above the pivot.
         for h in range(i - 1, -1 , -1):
@@ -144,7 +148,7 @@ def backsubstitution(B):
 
 if __name__ == '__main__':
 
-    A = np.loadtxt('h2m1.txt')
+    A = np.loadtxt('h2m5.txt')
     A = forwardElimination(A)
     print(A)
     print(np.nonzero(A)[0])
